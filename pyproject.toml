@@ -1,0 +1,12 @@
+[project]
+name = "echo-runpod"
+version = "1.0.0"
+description = "Governed Echo RunPod control plane"
+requires-python = ">=3.10"
+readme = "README.md"
+
+[project.scripts]
+echo-runpod = "echo_runpod.operator:main"
+
+[tool.setuptools.packages.find]
+include = ["echo_runpod*"]

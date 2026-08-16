@@ -1,2 +1,28 @@
-# echo-runpod
-Governed Echo RunPod control plane: official RunPod MCP/REST wrap with Vault, approval gates, cost ceilings, workload isolation, and Grok operator.
+# Echo RunPod
+
+Governed RunPod control plane for ECHO OMEGA PRIME.
+
+One canonical policy source. Thin entry points for Grok, Codex, Echo agents, and ChatGPT-via-Nexus.
+
+## Default
+
+Observe and prepare. Do not spend unless the Commander approved a manifest or a bounded full lane is in force. Echo Nexus mutations require `confirm: EXECUTE`.
+
+## Install
+
+See `skills/echo-runpod/references/install-verify.md`.
+
+## Test
+
+```bash
+PYTHONPATH=. python -m unittest discover -s tests -v
+```
+
+## Upstream
+
+- runpod/runpod-plugins-official v1.1.2 `b669407688056642d09d2049df5432cb78ae33f0`
+- runpod/runpod-mcp `51d6fd9a0ff16a4eeb7d508972aeb5502f514939`
+
+## Secrets
+
+`vault://runpod/api-key` then `RUNPOD_API_KEY`. Never commit keys.
