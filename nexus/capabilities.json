@@ -1,0 +1,48 @@
+{
+  "pack": "echo-runpod",
+  "version": "1.0.0",
+  "control_plane": "echo-nexus",
+  "sdk_allowlist": "closed — do not register via sdk_invoke_allowed",
+  "execution_path": "governed policy + official RunPod MCP/REST",
+  "confirm": "EXECUTE",
+  "oauth_scopes_used": [
+    "echo.nexus.read",
+    "echo.nexus.control",
+    "echo.nexus.fs.read",
+    "echo.nexus.fs.write",
+    "echo.grok.nodes.execute"
+  ],
+  "upstream": {
+    "runpod_plugins_official_commit": "b669407688056642d09d2049df5432cb78ae33f0",
+    "runpod_plugins_official_version": "1.1.2",
+    "runpod_mcp_commit": "51d6fd9a0ff16a4eeb7d508972aeb5502f514939"
+  },
+  "capabilities": [
+    {"capability": "echo.runpod.status", "tool": "runpod_status", "read_only": true, "approval_required": false, "annotations": {"readOnlyHint": true, "destructiveHint": false, "idempotentHint": false, "openWorldHint": true}},
+    {"capability": "echo.runpod.list_pods", "tool": "runpod_list_pods", "read_only": true, "approval_required": false, "annotations": {"readOnlyHint": true, "destructiveHint": false, "idempotentHint": false, "openWorldHint": true}},
+    {"capability": "echo.runpod.get_pod", "tool": "runpod_get_pod", "read_only": true, "approval_required": false, "annotations": {"readOnlyHint": true, "destructiveHint": false, "idempotentHint": false, "openWorldHint": true}},
+    {"capability": "echo.runpod.stream_pod_logs", "tool": "runpod_stream_pod_logs", "read_only": true, "approval_required": false, "annotations": {"readOnlyHint": true, "destructiveHint": false, "idempotentHint": false, "openWorldHint": true}},
+    {"capability": "echo.runpod.list_gpu_types", "tool": "runpod_list_gpu_types", "read_only": true, "approval_required": false, "annotations": {"readOnlyHint": true, "destructiveHint": false, "idempotentHint": false, "openWorldHint": true}},
+    {"capability": "echo.runpod.gpu_availability", "tool": "runpod_gpu_availability", "read_only": true, "approval_required": false, "annotations": {"readOnlyHint": true, "destructiveHint": false, "idempotentHint": false, "openWorldHint": true}},
+    {"capability": "echo.runpod.gpu_pricing", "tool": "runpod_gpu_pricing", "read_only": true, "approval_required": false, "annotations": {"readOnlyHint": true, "destructiveHint": false, "idempotentHint": false, "openWorldHint": true}},
+    {"capability": "echo.runpod.list_endpoints", "tool": "runpod_list_endpoints", "read_only": true, "approval_required": false, "annotations": {"readOnlyHint": true, "destructiveHint": false, "idempotentHint": false, "openWorldHint": true}},
+    {"capability": "echo.runpod.get_endpoint", "tool": "runpod_get_endpoint", "read_only": true, "approval_required": false, "annotations": {"readOnlyHint": true, "destructiveHint": false, "idempotentHint": false, "openWorldHint": true}},
+    {"capability": "echo.runpod.endpoint_health", "tool": "runpod_endpoint_health", "read_only": true, "approval_required": false, "annotations": {"readOnlyHint": true, "destructiveHint": false, "idempotentHint": false, "openWorldHint": true}},
+    {"capability": "echo.runpod.list_jobs", "tool": "runpod_list_jobs", "read_only": true, "approval_required": false, "annotations": {"readOnlyHint": true, "destructiveHint": false, "idempotentHint": false, "openWorldHint": true}},
+    {"capability": "echo.runpod.get_job", "tool": "runpod_get_job", "read_only": true, "approval_required": false, "annotations": {"readOnlyHint": true, "destructiveHint": false, "idempotentHint": false, "openWorldHint": true}},
+    {"capability": "echo.runpod.stream_job", "tool": "runpod_stream_job", "read_only": true, "approval_required": false, "annotations": {"readOnlyHint": true, "destructiveHint": false, "idempotentHint": false, "openWorldHint": true}},
+    {"capability": "echo.runpod.list_volumes", "tool": "runpod_list_volumes", "read_only": true, "approval_required": false, "annotations": {"readOnlyHint": true, "destructiveHint": false, "idempotentHint": false, "openWorldHint": true}},
+    {"capability": "echo.runpod.get_volume", "tool": "runpod_get_volume", "read_only": true, "approval_required": false, "annotations": {"readOnlyHint": true, "destructiveHint": false, "idempotentHint": false, "openWorldHint": true}},
+    {"capability": "echo.runpod.billing", "tool": "runpod_billing", "read_only": true, "approval_required": false, "annotations": {"readOnlyHint": true, "destructiveHint": false, "idempotentHint": false, "openWorldHint": true}},
+    {"capability": "echo.runpod.prepare_training", "tool": "runpod_prepare_training", "read_only": true, "approval_required": false, "annotations": {"readOnlyHint": true, "destructiveHint": false, "idempotentHint": false, "openWorldHint": true}},
+    {"capability": "echo.runpod.training_status", "tool": "runpod_training_status", "read_only": true, "approval_required": false, "annotations": {"readOnlyHint": true, "destructiveHint": false, "idempotentHint": false, "openWorldHint": true}},
+    {"capability": "echo.runpod.training_checkpoints", "tool": "runpod_training_checkpoints", "read_only": true, "approval_required": false, "annotations": {"readOnlyHint": true, "destructiveHint": false, "idempotentHint": false, "openWorldHint": true}},
+    {"capability": "echo.runpod.create_pod", "tool": "runpod_create_pod", "read_only": false, "approval_required": true, "confirm": "EXECUTE", "annotations": {"readOnlyHint": false, "destructiveHint": false, "idempotentHint": false, "openWorldHint": true}},
+    {"capability": "echo.runpod.start_pod", "tool": "runpod_start_pod", "read_only": false, "approval_required": true, "confirm": "EXECUTE", "annotations": {"readOnlyHint": false, "destructiveHint": false, "idempotentHint": true, "openWorldHint": true}},
+    {"capability": "echo.runpod.stop_pod", "tool": "runpod_stop_pod", "read_only": false, "approval_required": true, "confirm": "EXECUTE", "annotations": {"readOnlyHint": false, "destructiveHint": false, "idempotentHint": true, "openWorldHint": true}},
+    {"capability": "echo.runpod.restart_pod", "tool": "runpod_restart_pod", "read_only": false, "approval_required": true, "confirm": "EXECUTE", "annotations": {"readOnlyHint": false, "destructiveHint": false, "idempotentHint": false, "openWorldHint": true}},
+    {"capability": "echo.runpod.terminate_pod", "tool": "runpod_terminate_pod", "read_only": false, "approval_required": true, "confirm": "EXECUTE", "annotations": {"readOnlyHint": false, "destructiveHint": true, "idempotentHint": true, "openWorldHint": true}},
+    {"capability": "echo.runpod.launch_training", "tool": "runpod_launch_training", "read_only": false, "approval_required": true, "confirm": "EXECUTE", "annotations": {"readOnlyHint": false, "destructiveHint": false, "idempotentHint": false, "openWorldHint": true}},
+    {"capability": "echo.runpod.resume_training", "tool": "runpod_resume_training", "read_only": false, "approval_required": true, "confirm": "EXECUTE", "annotations": {"readOnlyHint": false, "destructiveHint": false, "idempotentHint": false, "openWorldHint": true}}
+  ]
+}
