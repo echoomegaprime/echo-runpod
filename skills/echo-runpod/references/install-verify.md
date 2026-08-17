@@ -25,3 +25,8 @@ Tests:
 ```text
 cd <pack> && PYTHONPATH=. python -m unittest discover -s tests -v
 ```
+
+MCP:
+
+- resource: `https://mcp.echo-op.com/oauth-mcp-runpod-v1`
+- well-known: `https://mcp.echo-op.com/.well-known/oauth-protected-resource/oauth-mcp-runpod-v1`

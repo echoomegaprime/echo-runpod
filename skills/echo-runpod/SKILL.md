@@ -17,6 +17,12 @@ Control plane: **ChatGPT / Grok / Codex → this skill → Echo Nexus → Vault 
 
 Do not invent a second RunPod control plane. Do not route through Echo Unified RW SDK.
 
+ChatGPT-installable MCP resource (never request `echo.write`):
+
+- `https://mcp.echo-op.com/oauth-mcp-runpod-v1`
+- scopes: `echo.runpod.read` `echo.runpod.prepare` `echo.runpod.control` `echo.runpod.spend`
+
+
 ## Default mode — observe + prepare
 
 Allowed without extra approval:

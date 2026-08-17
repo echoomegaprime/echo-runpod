@@ -8,8 +8,10 @@ from typing import Any, Mapping
 READ_ACTIONS = frozenset(
     {
         "runpod_status",
+        "runpod_account",
         "runpod_list_pods",
         "runpod_get_pod",
+        "runpod_pod_status",
         "runpod_stream_pod_logs",
         "runpod_list_gpu_types",
         "runpod_gpu_availability",
@@ -22,10 +24,15 @@ READ_ACTIONS = frozenset(
         "runpod_stream_job",
         "runpod_list_volumes",
         "runpod_get_volume",
+        "runpod_network_info",
         "runpod_billing",
+        "runpod_cost_estimate",
+        "runpod_burn_rate",
         "runpod_prepare_training",
+        "runpod_validate_manifest",
         "runpod_training_status",
         "runpod_training_checkpoints",
+        "runpod_live_verify",
     }
 )
 
@@ -39,10 +46,12 @@ APPROVAL_ACTIONS = frozenset(
         "runpod_resize_pod",
         "runpod_change_gpu",
         "runpod_create_volume",
+        "runpod_attach_volume",
         "runpod_launch_training",
         "runpod_resume_training",
         "runpod_create_endpoint",
         "runpod_scale_endpoint",
+        "runpod_cancel_job",
     }
 )
 
