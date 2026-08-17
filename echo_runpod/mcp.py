@@ -10,7 +10,23 @@ from typing import Any, Callable, Mapping
 
 from echo_runpod.client import RunPodClient, RunPodError, idempotency_digest, normalize_pods, parse_gpu_catalog
 from echo_runpod.governor import check_cost, idle_paid_resources
+from echo_runpod.idempotency import IdempotencyConflict, get_store
 from echo_runpod.manifests import ManifestError, validate_manifest
+from echo_runpod.oauth import (
+    ALL_SCOPES,
+    FORBIDDEN_SCOPES,
+    OAUTH_NEVER,
+    PACKAGE_VERSION,
+    SCOPE_DESCRIPTIONS,
+    SCOPE_FETCH,
+    SCOPE_INVOKE,
+    SCOPE_READ,
+    SCOPE_SEARCH,
+    recognized_scopes,
+    scopes_for_mutation_tool,
+    scopes_for_prepare_tool,
+    scopes_for_read_tool,
+)
 from echo_runpod.policy import (
     APPROVAL_ACTIONS,
     DESTRUCTIVE_ACTIONS,
@@ -27,13 +43,8 @@ RESOURCE_URL = "https://mcp.echo-op.com/oauth-mcp-runpod-v1"
 SERVICE_NAME = "echo-oauth-mcp-runpod-v1"
 PROTOCOL_VERSION = "2025-03-26"
 
-SCOPE_READ = "echo.runpod.read"
-SCOPE_PREPARE = "echo.runpod.prepare"
-SCOPE_CONTROL = "echo.runpod.control"
-SCOPE_SPEND = "echo.runpod.spend"
-ALL_SCOPES = (SCOPE_READ, SCOPE_PREPARE, SCOPE_CONTROL, SCOPE_SPEND)
-
-# Never request echo.write.
+# Live-accepted scopes only. Invented echo.runpod.* names are not issued.
+# SCOPE_READ is echo.invoke.read (live). echo.read / echo.write are not advertised.
 
 PREPARE_ACTIONS = frozenset({"runpod_prepare_training", "runpod_validate_manifest"})
 CONTROL_ACTIONS = frozenset(
@@ -55,6 +66,7 @@ SPEND_ACTIONS = frozenset(
         "runpod_resume_training",
     }
 )
+IDEMPOTENT_ACTIONS = SPEND_ACTIONS | CONTROL_ACTIONS
 
 
 def _prop(typ: str, description: str, **extra: Any) -> dict[str, Any]:
@@ -73,10 +85,25 @@ def _tool(
 ) -> dict[str, Any]:
     properties = dict(props or {})
     req = list(required or [])
-    if mutating and "confirm" not in properties:
-        properties["confirm"] = _prop("string", "Must be EXECUTE for consequential mutations")
+    if mutating:
+        if "confirm" not in properties:
+            properties["confirm"] = _prop("string", "Must be EXECUTE for consequential mutations")
         if "confirm" not in req:
             req.append("confirm")
+        if "approved_manifest" not in properties:
+            properties["approved_manifest"] = _prop(
+                "object", "Commander-approved execution manifest (workload_id + bounds)"
+            )
+        if "full_lane" not in properties:
+            properties["full_lane"] = _prop(
+                "object",
+                "Bounded full-lane authorization (workload, GPU, cost, dataset, model, artifacts)",
+            )
+        if "idempotency_key" not in properties:
+            properties["idempotency_key"] = _prop(
+                "string",
+                "Client key. Same key+request replays the receipt; same key+different request is idempotency_conflict",
+            )
     schema: dict[str, Any] = {
         "type": "object",
         "properties": properties,
@@ -95,88 +122,88 @@ def _tool(
 
 
 TOOLS: list[dict[str, Any]] = [
-    _tool("runpod_status", "Account + fleet snapshot (read-only)", (SCOPE_READ,)),
-    _tool("runpod_account", "RunPod account/balance if the API exposes it", (SCOPE_READ,)),
-    _tool("runpod_list_pods", "List pods in the Commander RunPod account", (SCOPE_READ,)),
+    _tool("runpod_status", "Account + fleet snapshot (read-only)", scopes_for_read_tool(discovery=True)),
+    _tool("runpod_account", "RunPod account/balance if the API exposes it", scopes_for_read_tool()),
+    _tool("runpod_list_pods", "List pods in the Commander RunPod account", scopes_for_read_tool()),
     _tool(
         "runpod_get_pod",
         "Pod details",
-        (SCOPE_READ,),
+        scopes_for_read_tool(),
         {"pod_id": _prop("string", "RunPod pod id")},
         ["pod_id"],
     ),
     _tool(
         "runpod_pod_status",
         "Normalized pod desired/current status",
-        (SCOPE_READ,),
+        scopes_for_read_tool(),
         {"pod_id": _prop("string", "RunPod pod id")},
         ["pod_id"],
     ),
     _tool(
         "runpod_stream_pod_logs",
         "Fetch available pod logs (capped; official stream when REST exposes it)",
-        (SCOPE_READ,),
+        scopes_for_read_tool(),
         {"pod_id": _prop("string", "RunPod pod id"), "lines": _prop("integer", "Max lines")},
         ["pod_id"],
     ),
-    _tool("runpod_list_gpu_types", "GPU catalog", (SCOPE_READ,)),
-    _tool("runpod_gpu_availability", "GPU stock / cloud availability", (SCOPE_READ,)),
-    _tool("runpod_gpu_pricing", "Live GPU pricing (never hard-coded as truth)", (SCOPE_READ,)),
-    _tool("runpod_list_endpoints", "Serverless endpoints", (SCOPE_READ,)),
+    _tool("runpod_list_gpu_types", "GPU catalog", scopes_for_read_tool()),
+    _tool("runpod_gpu_availability", "GPU stock / cloud availability", scopes_for_read_tool()),
+    _tool("runpod_gpu_pricing", "Live GPU pricing (never hard-coded as truth)", scopes_for_read_tool()),
+    _tool("runpod_list_endpoints", "Serverless endpoints", scopes_for_read_tool()),
     _tool(
         "runpod_get_endpoint",
         "Serverless endpoint details",
-        (SCOPE_READ,),
+        scopes_for_read_tool(),
         {"endpoint_id": _prop("string", "Endpoint id")},
         ["endpoint_id"],
     ),
     _tool(
         "runpod_endpoint_health",
         "Serverless endpoint health",
-        (SCOPE_READ,),
+        scopes_for_read_tool(),
         {"endpoint_id": _prop("string", "Endpoint id")},
         ["endpoint_id"],
     ),
     _tool(
         "runpod_list_jobs",
         "Jobs for an endpoint when the official API supports it",
-        (SCOPE_READ,),
+        scopes_for_read_tool(),
         {"endpoint_id": _prop("string", "Endpoint id")},
     ),
     _tool(
         "runpod_get_job",
         "Job status",
-        (SCOPE_READ,),
+        scopes_for_read_tool(),
         {"endpoint_id": _prop("string", "Endpoint id"), "job_id": _prop("string", "Job id")},
         ["job_id"],
     ),
     _tool(
         "runpod_stream_job",
         "Job output if the official API supports it",
-        (SCOPE_READ,),
+        scopes_for_read_tool(),
         {"endpoint_id": _prop("string", "Endpoint id"), "job_id": _prop("string", "Job id")},
         ["job_id"],
     ),
-    _tool("runpod_list_volumes", "Network volumes / storage", (SCOPE_READ,)),
+    _tool("runpod_list_volumes", "Network volumes / storage", scopes_for_read_tool()),
     _tool(
         "runpod_get_volume",
         "Volume details",
-        (SCOPE_READ,),
+        scopes_for_read_tool(),
         {"volume_id": _prop("string", "Network volume id")},
         ["volume_id"],
     ),
     _tool(
         "runpod_network_info",
         "Ports / proxy / SSH fields from a pod",
-        (SCOPE_READ,),
+        scopes_for_read_tool(),
         {"pod_id": _prop("string", "RunPod pod id")},
         ["pod_id"],
     ),
-    _tool("runpod_billing", "Billing / accrued spend when available", (SCOPE_READ,)),
+    _tool("runpod_billing", "Billing / accrued spend when available", scopes_for_read_tool()),
     _tool(
         "runpod_cost_estimate",
         "Estimate cost from live GPU pricing",
-        (SCOPE_READ, SCOPE_PREPARE),
+        scopes_for_prepare_tool(),
         {
             "gpu_type": _prop("string", "GPU display name or id"),
             "hours": _prop("number", "Hours to estimate"),
@@ -186,38 +213,38 @@ TOOLS: list[dict[str, Any]] = [
         },
         ["gpu_type", "hours"],
     ),
-    _tool("runpod_burn_rate", "Current burn from running pods + live prices", (SCOPE_READ,)),
+    _tool("runpod_burn_rate", "Current burn from running pods + live prices", scopes_for_read_tool()),
     _tool(
         "runpod_training_status",
         "Training workload status (pod + checkpoints)",
-        (SCOPE_READ,),
+        scopes_for_read_tool(),
         {"pod_id": _prop("string", "Trainer pod id")},
     ),
     _tool(
         "runpod_training_checkpoints",
         "Checkpoint / artifact paths if exposed",
-        (SCOPE_READ,),
+        scopes_for_read_tool(),
         {"pod_id": _prop("string", "Trainer pod id"), "volume_id": _prop("string", "Volume id")},
     ),
-    _tool("runpod_live_verify", "Read-only live verification receipt", (SCOPE_READ,)),
+    _tool("runpod_live_verify", "Read-only live verification receipt", scopes_for_read_tool(discovery=True)),
     _tool(
         "runpod_prepare_training",
         "Validate a training manifest. Does not spend.",
-        (SCOPE_PREPARE, SCOPE_READ),
+        scopes_for_prepare_tool(),
         {"manifest": _prop("object", "Training manifest object")},
         ["manifest"],
     ),
     _tool(
         "runpod_validate_manifest",
         "Alias of prepare — validate only",
-        (SCOPE_PREPARE, SCOPE_READ),
+        scopes_for_prepare_tool(),
         {"manifest": _prop("object", "Training manifest object")},
         ["manifest"],
     ),
     _tool(
         "runpod_create_pod",
         "Create a pod (approval-gated, confirm=EXECUTE)",
-        (SCOPE_SPEND,),
+        scopes_for_mutation_tool(),
         {
             "name": _prop("string", "Pod name"),
             "gpu_type": _prop("string", "GPU type id"),
@@ -231,7 +258,7 @@ TOOLS: list[dict[str, Any]] = [
     _tool(
         "runpod_start_pod",
         "Start an existing pod (confirm=EXECUTE)",
-        (SCOPE_CONTROL,),
+        scopes_for_mutation_tool(),
         {"pod_id": _prop("string", "Pod id")},
         ["pod_id"],
         True,
@@ -239,7 +266,7 @@ TOOLS: list[dict[str, Any]] = [
     _tool(
         "runpod_stop_pod",
         "Stop a pod (confirm=EXECUTE)",
-        (SCOPE_CONTROL,),
+        scopes_for_mutation_tool(),
         {"pod_id": _prop("string", "Pod id")},
         ["pod_id"],
         True,
@@ -247,7 +274,7 @@ TOOLS: list[dict[str, Any]] = [
     _tool(
         "runpod_restart_pod",
         "Restart / reset a pod (confirm=EXECUTE)",
-        (SCOPE_CONTROL,),
+        scopes_for_mutation_tool(),
         {"pod_id": _prop("string", "Pod id")},
         ["pod_id"],
         True,
@@ -255,7 +282,7 @@ TOOLS: list[dict[str, Any]] = [
     _tool(
         "runpod_terminate_pod",
         "Delete/terminate a pod (destructive, confirm=EXECUTE)",
-        (SCOPE_CONTROL,),
+        scopes_for_mutation_tool(),
         {"pod_id": _prop("string", "Pod id")},
         ["pod_id"],
         True,
@@ -263,7 +290,7 @@ TOOLS: list[dict[str, Any]] = [
     _tool(
         "runpod_resize_pod",
         "Resize / update a pod if RunPod permits (confirm=EXECUTE)",
-        (SCOPE_SPEND,),
+        scopes_for_mutation_tool(),
         {"pod_id": _prop("string", "Pod id"), "gpu_type": _prop("string", "New GPU type")},
         ["pod_id"],
         True,
@@ -271,7 +298,7 @@ TOOLS: list[dict[str, Any]] = [
     _tool(
         "runpod_change_gpu",
         "Change GPU class (confirm=EXECUTE)",
-        (SCOPE_SPEND,),
+        scopes_for_mutation_tool(),
         {"pod_id": _prop("string", "Pod id"), "gpu_type": _prop("string", "New GPU type")},
         ["pod_id", "gpu_type"],
         True,
@@ -279,7 +306,7 @@ TOOLS: list[dict[str, Any]] = [
     _tool(
         "runpod_attach_volume",
         "Attach or change storage where supported (confirm=EXECUTE)",
-        (SCOPE_SPEND,),
+        scopes_for_mutation_tool(),
         {"pod_id": _prop("string", "Pod id"), "volume_id": _prop("string", "Volume id")},
         ["pod_id", "volume_id"],
         True,
@@ -287,7 +314,7 @@ TOOLS: list[dict[str, Any]] = [
     _tool(
         "runpod_launch_training",
         "Execute a prepared training manifest (confirm=EXECUTE)",
-        (SCOPE_SPEND,),
+        scopes_for_mutation_tool(),
         {
             "manifest": _prop("object", "Approved training manifest"),
             "approved_manifest": _prop("object", "Same manifest after Commander approval"),
@@ -298,7 +325,7 @@ TOOLS: list[dict[str, Any]] = [
     _tool(
         "runpod_resume_training",
         "Resume a training pod (confirm=EXECUTE)",
-        (SCOPE_SPEND,),
+        scopes_for_mutation_tool(),
         {"pod_id": _prop("string", "Pod id")},
         ["pod_id"],
         True,
@@ -306,7 +333,7 @@ TOOLS: list[dict[str, Any]] = [
     _tool(
         "runpod_cancel_job",
         "Cancel a serverless job if the official API supports it (confirm=EXECUTE)",
-        (SCOPE_CONTROL,),
+        scopes_for_mutation_tool(),
         {"endpoint_id": _prop("string", "Endpoint id"), "job_id": _prop("string", "Job id")},
         ["job_id"],
         True,
@@ -326,14 +353,10 @@ def resource_catalog() -> dict[str, Any]:
         "purpose": "Governed RunPod control plane for Echo Omega Prime",
         "scopes": list(ALL_SCOPES),
         "default_scopes": list(ALL_SCOPES),
-        "scope_descriptions": {
-            SCOPE_READ: "Inspect pods, GPUs, pricing, billing, storage, logs, jobs",
-            SCOPE_PREPARE: "Validate training manifests and cost estimates (no spend)",
-            SCOPE_CONTROL: "Start/stop/restart/terminate/cancel with confirm=EXECUTE",
-            SCOPE_SPEND: "Create/resize/launch paid resources with confirm=EXECUTE",
-        },
+        "scope_descriptions": dict(SCOPE_DESCRIPTIONS),
         "tools": [t["name"] for t in TOOLS],
-        "oauth_never": ["echo.write"],
+        "oauth_never": list(OAUTH_NEVER) + sorted(FORBIDDEN_SCOPES - set(OAUTH_NEVER)),
+        "version": PACKAGE_VERSION,
         "secret_ref": "vault://runpod/api-key",
         "secret_env_fallback": "RUNPOD_API_KEY",
         "cloudflare_route": RESOURCE_PATH,
@@ -346,11 +369,15 @@ def resource_catalog() -> dict[str, Any]:
 
 
 def tools_list_payload(scopes: list[str] | None) -> list[dict[str, Any]]:
-    granted = set(scopes or ALL_SCOPES)
-    grant_all = not granted or granted.intersection(ALL_SCOPES)
+    """Expose only tools whose required scopes intersect live-recognized grants.
+
+    Unauthenticated callers never reach this function.
+    Empty, unknown, or invented scopes grant nothing — never the full catalog.
+    """
+    granted = recognized_scopes(scopes)
     out = []
     for tool in TOOLS:
-        if grant_all or set(tool["scopes"]).intersection(granted):
+        if set(tool["scopes"]).intersection(granted):
             out.append(
                 {
                     "name": tool["name"],
@@ -394,7 +421,7 @@ def handle_initialize() -> dict[str, Any]:
     return {
         "protocolVersion": PROTOCOL_VERSION,
         "capabilities": {"tools": {}},
-        "serverInfo": {"name": SERVICE_NAME, "version": "1.1.0"},
+        "serverInfo": {"name": SERVICE_NAME, "version": PACKAGE_VERSION},
     }
 
 
@@ -435,7 +462,7 @@ def handle_rpc(
     if method == "initialize":
         return ok(handle_initialize())
     if method in {"tools/list", "tools.list"}:
-        return ok({"tools": tools_list_payload(scopes), "scopes_granted": list(scopes or ALL_SCOPES)})
+        return ok({"tools": tools_list_payload(scopes), "scopes_granted": sorted(recognized_scopes(scopes))})
     if method == "ping":
         return ok({})
     if method not in {"tools/call", "tools.call"}:
@@ -487,6 +514,18 @@ def call_tool(
                 "policy": decision.to_dict(),
             }
 
+    if name in IDEMPOTENT_ACTIONS:
+        key = args.get("idempotency_key")
+        if key:
+            try:
+                cached = get_store().recall(str(key), name, args)
+            except IdempotencyConflict as exc:
+                return _error("idempotency_conflict", str(exc), 409)
+            if cached is not None:
+                replay = dict(cached)
+                replay["idempotent_replay"] = True
+                return replay
+
     try:
         data = _dispatch(name, args, client=client, transport=transport)
         payload = {
@@ -496,8 +535,15 @@ def call_tool(
             "policy": decision.to_dict(),
             "secret_ref": "vault://runpod/api-key",
         }
+        if name in IDEMPOTENT_ACTIONS:
+            payload["idempotency"] = get_store().digest_for(name, args)
+            key = args.get("idempotency_key")
+            if key:
+                get_store().record(str(key), name, args, payload)
         assert_no_secrets(payload)
         return payload
+    except IdempotencyConflict as exc:
+        return _error("idempotency_conflict", str(exc), 409)
     except SecretError as exc:
         return _error("vault_unavailable", str(exc), 503)
     except RunPodError as exc:

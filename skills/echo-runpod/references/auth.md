@@ -1,5 +1,18 @@
 # Authentication
 
+## MCP OAuth (ChatGPT / Echo Nexus)
+
+Live authorization server (2026-08-17) issues:
+
+- `echo.search`
+- `echo.fetch`
+- `echo.invoke.read`
+- `echo.sdk.invoke`
+
+Do not request `echo.write`, `echo.read`, or invented `echo.runpod.*` scopes.
+Those names produce `invalid_scope`. Mutations stay on `echo.sdk.invoke` and
+still require `confirm: EXECUTE`.
+
 ## Resolution order
 
 1. Vault Broker `vault://runpod/api-key` (server-env only)

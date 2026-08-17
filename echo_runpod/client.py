@@ -39,7 +39,7 @@ class RunPodClient:
             **self.broker.authorization_header(),
             "Accept": "application/json",
             "Content-Type": "application/json",
-            "User-Agent": "echo-runpod/1.1.0",
+            "User-Agent": "echo-runpod/1.1.1",
         }
         req = urllib.request.Request(url, data=data, headers=headers, method=method)
         try:
