@@ -6,9 +6,8 @@ from echo_runpod.mcp import (
     ALL_SCOPES,
     RESOURCE_PATH,
     RESOURCE_URL,
-    SCOPE_CONTROL,
+    SCOPE_INVOKE,
     SCOPE_READ,
-    SCOPE_SPEND,
     TOOLS,
     call_tool,
     chatgpt_tool_schemas,
@@ -124,12 +123,12 @@ class McpTests(unittest.TestCase):
         self.assertEqual(out["error_type"], "insufficient_scope")
 
     def test_06_mutation_blocked_without_approval(self):
-        out = call_tool("runpod_stop_pod", {"pod_id": "x"}, scopes=[SCOPE_CONTROL])
+        out = call_tool("runpod_stop_pod", {"pod_id": "x"}, scopes=[SCOPE_INVOKE])
         self.assertEqual(out["error_type"], "mutating_ops_require_confirm_EXECUTE")
         out2 = call_tool(
             "runpod_stop_pod",
             {"pod_id": "x", "confirm": "EXECUTE"},
-            scopes=[SCOPE_CONTROL],
+            scopes=[SCOPE_INVOKE],
         )
         self.assertEqual(out2["error_type"], "policy_denied")
 
@@ -195,14 +194,14 @@ class McpTests(unittest.TestCase):
         good = call_tool(
             "runpod_prepare_training",
             {"manifest": landman_example()},
-            scopes=["echo.runpod.prepare"],
+            scopes=[SCOPE_READ],
             client=_client(),
         )
         self.assertTrue(good["ok"])
         bad = call_tool(
             "runpod_validate_manifest",
             {"manifest": {"workload_id": "x"}},
-            scopes=["echo.runpod.prepare"],
+            scopes=[SCOPE_READ],
             client=_client(),
         )
         self.assertEqual(bad["error_type"], "validation_error")
@@ -237,7 +236,7 @@ class McpTests(unittest.TestCase):
                     "termination_policy": "stop",
                 },
             },
-            scopes=[SCOPE_SPEND],
+            scopes=[SCOPE_INVOKE],
             client=_client(),
         )
         self.assertEqual(over["error_type"], "policy_denied")
@@ -253,9 +252,11 @@ class McpTests(unittest.TestCase):
         self.assertEqual(cat["path"], "/oauth-mcp-runpod-v1")
         self.assertEqual(cat["canonical"], "https://mcp.echo-op.com/oauth-mcp-runpod-v1")
         self.assertEqual(cat["id"], "oauth-mcp-runpod-v1")
-        self.assertIn("echo.runpod.read", cat["scopes"])
+        self.assertIn("echo.invoke.read", cat["scopes"])
+        self.assertIn("echo.sdk.invoke", cat["scopes"])
         self.assertNotIn("echo.write", cat["scopes"])
-        self.assertEqual(cat["oauth_never"], ["echo.write"])
+        self.assertNotIn("echo.runpod.read", cat["scopes"])
+        self.assertIn("echo.write", cat["oauth_never"])
 
     def test_18_cloudflare_route_health(self):
         cat = resource_catalog()

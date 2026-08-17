@@ -1,8 +1,13 @@
-"""Canonical Echo-facing capability map. Names follow echo.runpod.*."""
+"""Canonical Echo-facing capability map.
+
+Capability names remain echo.runpod.* (internal registry ids).
+OAuth scopes on each record are the live-accepted set for that tool only.
+"""
 
 from __future__ import annotations
 
-from echo_runpod.mcp import ALL_SCOPES, RESOURCE_URL, TOOLS
+from echo_runpod.mcp import RESOURCE_URL, TOOLS
+from echo_runpod.oauth import ALL_SCOPES, OAUTH_NEVER, PACKAGE_VERSION
 from echo_runpod.policy import APPROVAL_ACTIONS, DESTRUCTIVE_ACTIONS, READ_ACTIONS, annotations_for
 
 NEXUS_CAPABILITIES = [
@@ -65,6 +70,8 @@ def capability_records() -> list[dict]:
     records = []
     for tool, cap in TOOL_TO_CAPABILITY.items():
         hints = annotations_for(tool)
+        tool_meta = next((t for t in TOOLS if t["name"] == tool), None)
+        scopes = list(tool_meta["scopes"]) if tool_meta else list(ALL_SCOPES)
         records.append(
             {
                 "capability": cap,
@@ -74,7 +81,30 @@ def capability_records() -> list[dict]:
                 "annotations": hints,
                 "confirm": "EXECUTE" if tool in APPROVAL_ACTIONS or tool in DESTRUCTIVE_ACTIONS else None,
                 "mcp_resource": RESOURCE_URL,
-                "oauth_scopes": list(ALL_SCOPES),
+                "oauth_scopes": scopes,
             }
         )
     return records
+
+
+def nexus_manifest() -> dict:
+    return {
+        "pack": "echo-runpod",
+        "version": PACKAGE_VERSION,
+        "control_plane": "echo-nexus",
+        "mcp_resource": RESOURCE_URL,
+        "mcp_path": "/oauth-mcp-runpod-v1",
+        "sdk_allowlist": "closed — do not register via sdk_invoke_allowed",
+        "execution_path": "governed policy + official RunPod MCP/REST via Echo Nexus pack edge",
+        "confirm": "EXECUTE",
+        "oauth_scopes_used": list(ALL_SCOPES),
+        "oauth_never": list(OAUTH_NEVER),
+        "secret_ref": "vault://runpod/api-key",
+        "secret_env_fallback": "RUNPOD_API_KEY",
+        "upstream": {
+            "runpod_plugins_official_commit": "b669407688056642d09d2049df5432cb78ae33f0",
+            "runpod_plugins_official_version": "1.1.2",
+            "runpod_mcp_commit": "51d6fd9a0ff16a4eeb7d508972aeb5502f514939",
+        },
+        "capabilities": capability_records(),
+    }

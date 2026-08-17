@@ -1,6 +1,6 @@
 {
   "pack": "echo-runpod",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "control_plane": "echo-nexus",
   "mcp_resource": "https://mcp.echo-op.com/oauth-mcp-runpod-v1",
   "mcp_path": "/oauth-mcp-runpod-v1",
@@ -8,10 +8,10 @@
   "execution_path": "governed policy + official RunPod MCP/REST via Echo Nexus pack edge",
   "confirm": "EXECUTE",
   "oauth_scopes_used": [
-    "echo.runpod.read",
-    "echo.runpod.prepare",
-    "echo.runpod.control",
-    "echo.runpod.spend"
+    "echo.search",
+    "echo.fetch",
+    "echo.invoke.read",
+    "echo.sdk.invoke"
   ],
   "oauth_never": [
     "echo.write"
@@ -38,10 +38,9 @@
       "confirm": null,
       "mcp_resource": "https://mcp.echo-op.com/oauth-mcp-runpod-v1",
       "oauth_scopes": [
-        "echo.runpod.read",
-        "echo.runpod.prepare",
-        "echo.runpod.control",
-        "echo.runpod.spend"
+        "echo.search",
+        "echo.invoke.read",
+        "echo.fetch"
       ]
     },
     {
@@ -58,10 +57,8 @@
       "confirm": null,
       "mcp_resource": "https://mcp.echo-op.com/oauth-mcp-runpod-v1",
       "oauth_scopes": [
-        "echo.runpod.read",
-        "echo.runpod.prepare",
-        "echo.runpod.control",
-        "echo.runpod.spend"
+        "echo.invoke.read",
+        "echo.fetch"
       ]
     },
     {
@@ -78,10 +75,8 @@
       "confirm": null,
       "mcp_resource": "https://mcp.echo-op.com/oauth-mcp-runpod-v1",
       "oauth_scopes": [
-        "echo.runpod.read",
-        "echo.runpod.prepare",
-        "echo.runpod.control",
-        "echo.runpod.spend"
+        "echo.invoke.read",
+        "echo.fetch"
       ]
     },
     {
@@ -98,10 +93,8 @@
       "confirm": null,
       "mcp_resource": "https://mcp.echo-op.com/oauth-mcp-runpod-v1",
       "oauth_scopes": [
-        "echo.runpod.read",
-        "echo.runpod.prepare",
-        "echo.runpod.control",
-        "echo.runpod.spend"
+        "echo.invoke.read",
+        "echo.fetch"
       ]
     },
     {
@@ -118,10 +111,8 @@
       "confirm": null,
       "mcp_resource": "https://mcp.echo-op.com/oauth-mcp-runpod-v1",
       "oauth_scopes": [
-        "echo.runpod.read",
-        "echo.runpod.prepare",
-        "echo.runpod.control",
-        "echo.runpod.spend"
+        "echo.invoke.read",
+        "echo.fetch"
       ]
     },
     {
@@ -138,10 +129,8 @@
       "confirm": null,
       "mcp_resource": "https://mcp.echo-op.com/oauth-mcp-runpod-v1",
       "oauth_scopes": [
-        "echo.runpod.read",
-        "echo.runpod.prepare",
-        "echo.runpod.control",
-        "echo.runpod.spend"
+        "echo.invoke.read",
+        "echo.fetch"
       ]
     },
     {
@@ -158,10 +147,8 @@
       "confirm": null,
       "mcp_resource": "https://mcp.echo-op.com/oauth-mcp-runpod-v1",
       "oauth_scopes": [
-        "echo.runpod.read",
-        "echo.runpod.prepare",
-        "echo.runpod.control",
-        "echo.runpod.spend"
+        "echo.invoke.read",
+        "echo.fetch"
       ]
     },
     {
@@ -178,10 +165,8 @@
       "confirm": null,
       "mcp_resource": "https://mcp.echo-op.com/oauth-mcp-runpod-v1",
       "oauth_scopes": [
-        "echo.runpod.read",
-        "echo.runpod.prepare",
-        "echo.runpod.control",
-        "echo.runpod.spend"
+        "echo.invoke.read",
+        "echo.fetch"
       ]
     },
     {
@@ -198,10 +183,8 @@
       "confirm": null,
       "mcp_resource": "https://mcp.echo-op.com/oauth-mcp-runpod-v1",
       "oauth_scopes": [
-        "echo.runpod.read",
-        "echo.runpod.prepare",
-        "echo.runpod.control",
-        "echo.runpod.spend"
+        "echo.invoke.read",
+        "echo.fetch"
       ]
     },
     {
@@ -218,10 +201,8 @@
       "confirm": null,
       "mcp_resource": "https://mcp.echo-op.com/oauth-mcp-runpod-v1",
       "oauth_scopes": [
-        "echo.runpod.read",
-        "echo.runpod.prepare",
-        "echo.runpod.control",
-        "echo.runpod.spend"
+        "echo.invoke.read",
+        "echo.fetch"
       ]
     },
     {
@@ -238,10 +219,8 @@
       "confirm": null,
       "mcp_resource": "https://mcp.echo-op.com/oauth-mcp-runpod-v1",
       "oauth_scopes": [
-        "echo.runpod.read",
-        "echo.runpod.prepare",
-        "echo.runpod.control",
-        "echo.runpod.spend"
+        "echo.invoke.read",
+        "echo.fetch"
       ]
     },
     {
@@ -258,10 +237,8 @@
       "confirm": null,
       "mcp_resource": "https://mcp.echo-op.com/oauth-mcp-runpod-v1",
       "oauth_scopes": [
-        "echo.runpod.read",
-        "echo.runpod.prepare",
-        "echo.runpod.control",
-        "echo.runpod.spend"
+        "echo.invoke.read",
+        "echo.fetch"
       ]
     },
     {
@@ -278,10 +255,8 @@
       "confirm": null,
       "mcp_resource": "https://mcp.echo-op.com/oauth-mcp-runpod-v1",
       "oauth_scopes": [
-        "echo.runpod.read",
-        "echo.runpod.prepare",
-        "echo.runpod.control",
-        "echo.runpod.spend"
+        "echo.invoke.read",
+        "echo.fetch"
       ]
     },
     {
@@ -298,10 +273,8 @@
       "confirm": null,
       "mcp_resource": "https://mcp.echo-op.com/oauth-mcp-runpod-v1",
       "oauth_scopes": [
-        "echo.runpod.read",
-        "echo.runpod.prepare",
-        "echo.runpod.control",
-        "echo.runpod.spend"
+        "echo.invoke.read",
+        "echo.fetch"
       ]
     },
     {
@@ -318,10 +291,8 @@
       "confirm": null,
       "mcp_resource": "https://mcp.echo-op.com/oauth-mcp-runpod-v1",
       "oauth_scopes": [
-        "echo.runpod.read",
-        "echo.runpod.prepare",
-        "echo.runpod.control",
-        "echo.runpod.spend"
+        "echo.invoke.read",
+        "echo.fetch"
       ]
     },
     {
@@ -338,10 +309,8 @@
       "confirm": null,
       "mcp_resource": "https://mcp.echo-op.com/oauth-mcp-runpod-v1",
       "oauth_scopes": [
-        "echo.runpod.read",
-        "echo.runpod.prepare",
-        "echo.runpod.control",
-        "echo.runpod.spend"
+        "echo.invoke.read",
+        "echo.fetch"
       ]
     },
     {
@@ -358,10 +327,8 @@
       "confirm": null,
       "mcp_resource": "https://mcp.echo-op.com/oauth-mcp-runpod-v1",
       "oauth_scopes": [
-        "echo.runpod.read",
-        "echo.runpod.prepare",
-        "echo.runpod.control",
-        "echo.runpod.spend"
+        "echo.invoke.read",
+        "echo.fetch"
       ]
     },
     {
@@ -378,10 +345,8 @@
       "confirm": null,
       "mcp_resource": "https://mcp.echo-op.com/oauth-mcp-runpod-v1",
       "oauth_scopes": [
-        "echo.runpod.read",
-        "echo.runpod.prepare",
-        "echo.runpod.control",
-        "echo.runpod.spend"
+        "echo.invoke.read",
+        "echo.fetch"
       ]
     },
     {
@@ -398,10 +363,8 @@
       "confirm": null,
       "mcp_resource": "https://mcp.echo-op.com/oauth-mcp-runpod-v1",
       "oauth_scopes": [
-        "echo.runpod.read",
-        "echo.runpod.prepare",
-        "echo.runpod.control",
-        "echo.runpod.spend"
+        "echo.invoke.read",
+        "echo.fetch"
       ]
     },
     {
@@ -418,10 +381,9 @@
       "confirm": null,
       "mcp_resource": "https://mcp.echo-op.com/oauth-mcp-runpod-v1",
       "oauth_scopes": [
-        "echo.runpod.read",
-        "echo.runpod.prepare",
-        "echo.runpod.control",
-        "echo.runpod.spend"
+        "echo.invoke.read",
+        "echo.fetch",
+        "echo.sdk.invoke"
       ]
     },
     {
@@ -438,10 +400,8 @@
       "confirm": null,
       "mcp_resource": "https://mcp.echo-op.com/oauth-mcp-runpod-v1",
       "oauth_scopes": [
-        "echo.runpod.read",
-        "echo.runpod.prepare",
-        "echo.runpod.control",
-        "echo.runpod.spend"
+        "echo.invoke.read",
+        "echo.fetch"
       ]
     },
     {
@@ -458,10 +418,8 @@
       "confirm": null,
       "mcp_resource": "https://mcp.echo-op.com/oauth-mcp-runpod-v1",
       "oauth_scopes": [
-        "echo.runpod.read",
-        "echo.runpod.prepare",
-        "echo.runpod.control",
-        "echo.runpod.spend"
+        "echo.invoke.read",
+        "echo.fetch"
       ]
     },
     {
@@ -478,10 +436,8 @@
       "confirm": null,
       "mcp_resource": "https://mcp.echo-op.com/oauth-mcp-runpod-v1",
       "oauth_scopes": [
-        "echo.runpod.read",
-        "echo.runpod.prepare",
-        "echo.runpod.control",
-        "echo.runpod.spend"
+        "echo.invoke.read",
+        "echo.fetch"
       ]
     },
     {
@@ -498,10 +454,9 @@
       "confirm": null,
       "mcp_resource": "https://mcp.echo-op.com/oauth-mcp-runpod-v1",
       "oauth_scopes": [
-        "echo.runpod.read",
-        "echo.runpod.prepare",
-        "echo.runpod.control",
-        "echo.runpod.spend"
+        "echo.search",
+        "echo.invoke.read",
+        "echo.fetch"
       ]
     },
     {
@@ -518,10 +473,9 @@
       "confirm": null,
       "mcp_resource": "https://mcp.echo-op.com/oauth-mcp-runpod-v1",
       "oauth_scopes": [
-        "echo.runpod.read",
-        "echo.runpod.prepare",
-        "echo.runpod.control",
-        "echo.runpod.spend"
+        "echo.invoke.read",
+        "echo.fetch",
+        "echo.sdk.invoke"
       ]
     },
     {
@@ -538,10 +492,9 @@
       "confirm": null,
       "mcp_resource": "https://mcp.echo-op.com/oauth-mcp-runpod-v1",
       "oauth_scopes": [
-        "echo.runpod.read",
-        "echo.runpod.prepare",
-        "echo.runpod.control",
-        "echo.runpod.spend"
+        "echo.invoke.read",
+        "echo.fetch",
+        "echo.sdk.invoke"
       ]
     },
     {
@@ -558,10 +511,7 @@
       "confirm": "EXECUTE",
       "mcp_resource": "https://mcp.echo-op.com/oauth-mcp-runpod-v1",
       "oauth_scopes": [
-        "echo.runpod.read",
-        "echo.runpod.prepare",
-        "echo.runpod.control",
-        "echo.runpod.spend"
+        "echo.sdk.invoke"
       ]
     },
     {
@@ -578,10 +528,7 @@
       "confirm": "EXECUTE",
       "mcp_resource": "https://mcp.echo-op.com/oauth-mcp-runpod-v1",
       "oauth_scopes": [
-        "echo.runpod.read",
-        "echo.runpod.prepare",
-        "echo.runpod.control",
-        "echo.runpod.spend"
+        "echo.sdk.invoke"
       ]
     },
     {
@@ -598,10 +545,7 @@
       "confirm": "EXECUTE",
       "mcp_resource": "https://mcp.echo-op.com/oauth-mcp-runpod-v1",
       "oauth_scopes": [
-        "echo.runpod.read",
-        "echo.runpod.prepare",
-        "echo.runpod.control",
-        "echo.runpod.spend"
+        "echo.sdk.invoke"
       ]
     },
     {
@@ -618,10 +562,7 @@
       "confirm": "EXECUTE",
       "mcp_resource": "https://mcp.echo-op.com/oauth-mcp-runpod-v1",
       "oauth_scopes": [
-        "echo.runpod.read",
-        "echo.runpod.prepare",
-        "echo.runpod.control",
-        "echo.runpod.spend"
+        "echo.sdk.invoke"
       ]
     },
     {
@@ -638,10 +579,7 @@
       "confirm": "EXECUTE",
       "mcp_resource": "https://mcp.echo-op.com/oauth-mcp-runpod-v1",
       "oauth_scopes": [
-        "echo.runpod.read",
-        "echo.runpod.prepare",
-        "echo.runpod.control",
-        "echo.runpod.spend"
+        "echo.sdk.invoke"
       ]
     },
     {
@@ -658,10 +596,7 @@
       "confirm": "EXECUTE",
       "mcp_resource": "https://mcp.echo-op.com/oauth-mcp-runpod-v1",
       "oauth_scopes": [
-        "echo.runpod.read",
-        "echo.runpod.prepare",
-        "echo.runpod.control",
-        "echo.runpod.spend"
+        "echo.sdk.invoke"
       ]
     },
     {
@@ -678,10 +613,7 @@
       "confirm": "EXECUTE",
       "mcp_resource": "https://mcp.echo-op.com/oauth-mcp-runpod-v1",
       "oauth_scopes": [
-        "echo.runpod.read",
-        "echo.runpod.prepare",
-        "echo.runpod.control",
-        "echo.runpod.spend"
+        "echo.sdk.invoke"
       ]
     },
     {
@@ -698,10 +630,7 @@
       "confirm": "EXECUTE",
       "mcp_resource": "https://mcp.echo-op.com/oauth-mcp-runpod-v1",
       "oauth_scopes": [
-        "echo.runpod.read",
-        "echo.runpod.prepare",
-        "echo.runpod.control",
-        "echo.runpod.spend"
+        "echo.sdk.invoke"
       ]
     },
     {
@@ -718,10 +647,7 @@
       "confirm": "EXECUTE",
       "mcp_resource": "https://mcp.echo-op.com/oauth-mcp-runpod-v1",
       "oauth_scopes": [
-        "echo.runpod.read",
-        "echo.runpod.prepare",
-        "echo.runpod.control",
-        "echo.runpod.spend"
+        "echo.sdk.invoke"
       ]
     },
     {
@@ -738,10 +664,7 @@
       "confirm": "EXECUTE",
       "mcp_resource": "https://mcp.echo-op.com/oauth-mcp-runpod-v1",
       "oauth_scopes": [
-        "echo.runpod.read",
-        "echo.runpod.prepare",
-        "echo.runpod.control",
-        "echo.runpod.spend"
+        "echo.sdk.invoke"
       ]
     },
     {
@@ -758,10 +681,7 @@
       "confirm": "EXECUTE",
       "mcp_resource": "https://mcp.echo-op.com/oauth-mcp-runpod-v1",
       "oauth_scopes": [
-        "echo.runpod.read",
-        "echo.runpod.prepare",
-        "echo.runpod.control",
-        "echo.runpod.spend"
+        "echo.sdk.invoke"
       ]
     }
   ]

@@ -16,8 +16,8 @@ Nexus mutations still require `confirm: EXECUTE`.
 
 - path: `/oauth-mcp-runpod-v1`
 - url: `https://mcp.echo-op.com/oauth-mcp-runpod-v1`
-- scopes: `echo.runpod.read` `echo.runpod.prepare` `echo.runpod.control` `echo.runpod.spend`
-- never: `echo.write`
+- scopes: `echo.search` `echo.fetch` `echo.invoke.read` `echo.sdk.invoke`
+- never: `echo.write`, `echo.read`, `echo.runpod.*`
 
 Python catalog: `echo_runpod.mcp.resource_catalog()`.
 Echo Nexus registers the same id in `src/lib/oauth-mcp-pack/catalog.ts`.

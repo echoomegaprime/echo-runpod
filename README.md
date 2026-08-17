@@ -1,6 +1,6 @@
 # Echo RunPod
 
-Governed RunPod control plane for ECHO OMEGA PRIME.
+Governed RunPod control plane for ECHO OMEGA PRIME. Version **1.1.1**.
 
 One canonical policy source. Thin entry points for Grok, Codex, Echo agents, and ChatGPT-via-Nexus.
 
@@ -10,11 +10,14 @@ Observe and prepare. Do not spend unless the Commander approved a manifest or a 
 
 ## ChatGPT / MCP
 
-Dedicated resource (do not request `echo.write`):
+Dedicated resource (do **not** request `echo.write`):
 
 - https://mcp.echo-op.com/oauth-mcp-runpod-v1
-- scopes: `echo.runpod.read` `echo.runpod.prepare` `echo.runpod.control` `echo.runpod.spend`
+- live scopes: `echo.search` `echo.fetch` `echo.invoke.read` `echo.sdk.invoke`
+- never: `echo.write`, `echo.read`, `echo.runpod.*`
 - secret: `vault://runpod/api-key` then `RUNPOD_API_KEY`
+
+`echo.sdk.invoke` keeps mutation tools mutating (`readOnlyHint: false`). They still require `confirm: EXECUTE` plus an approved manifest or bounded full lane.
 
 ## Install
 

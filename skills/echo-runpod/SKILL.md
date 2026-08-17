@@ -20,7 +20,8 @@ Do not invent a second RunPod control plane. Do not route through Echo Unified R
 ChatGPT-installable MCP resource (never request `echo.write`):
 
 - `https://mcp.echo-op.com/oauth-mcp-runpod-v1`
-- scopes: `echo.runpod.read` `echo.runpod.prepare` `echo.runpod.control` `echo.runpod.spend`
+- live scopes: `echo.search` `echo.fetch` `echo.invoke.read` `echo.sdk.invoke`
+- never: `echo.write`, `echo.read`, invented `echo.runpod.*` names
 
 
 ## Default mode — observe + prepare
